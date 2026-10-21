@@ -1,0 +1,99 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Groups — Wedding Wrapped</title>
+<style>
+:root{--bg:#f6f4ef;--panel:#fff;--ink:#1a1a19;--muted:#6b6963;--line:#e4e1d8;--acc:#b8862b;--warn:#c8462f;--hi:#fff4d6}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;gap:14px;align-items:center}
+h1{font-size:16px;margin:0;font-weight:600}.hint{color:var(--muted);font-size:12px}a{color:var(--acc)}
+main{display:grid;grid-template-columns:300px 1fr;gap:16px;padding:16px 20px;max-width:1400px;margin:0 auto}
+@media(max-width:800px){main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+.glist button{display:block;width:100%;text-align:left;font:inherit;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer;margin-bottom:6px}
+.glist button.on{background:#1a1a19;color:#fff;border-color:#1a1a19}.glist small{opacity:.7;float:right}
+input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;width:100%}
+.mem{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--line);border-radius:22px;padding:4px 8px 4px 4px;font-size:13px}
+.chip img{width:32px;height:32px;border-radius:50%;object-fit:cover}.chip b{font-weight:600}.chip .x{cursor:pointer;color:var(--warn);font-weight:700;padding:0 4px}
+.chip.fixed{opacity:.75}.chip.fixed .x{display:none}
+.sug{list-style:none;margin:6px 0 0;padding:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;max-height:320px;overflow-y:auto;background:var(--panel)}
+.sug:empty{border:0}
+.sug li{padding:7px 10px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;align-items:center;gap:8px}.sug li:last-child{border-bottom:0}.sug li:hover{background:var(--hi)}
+.sug img{width:28px;height:28px;border-radius:50%;object-fit:cover}.sug small{color:var(--muted);margin-left:auto;text-align:right}
+.row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+button.act{font:inherit;padding:8px 14px;border:1px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer}
+button.pri{background:#1a1a19;color:#fff;border-color:#1a1a19}button.danger{color:var(--warn)}
+.preset{border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px;background:#fff}
+.preset .faces{display:flex;flex-wrap:wrap;gap:3px;margin:6px 0}
+.preset img{width:26px;height:26px;border-radius:50%;object-fit:cover}
+h4{margin:16px 0 6px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+#msg{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1a1a19;color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;display:none}
+.draftbar{background:var(--hi);border:1px solid #f0dfae;border-radius:8px;padding:8px 12px;font-size:13px;margin-bottom:10px}
+</style></head><body>
+<header><h1>Groups</h1><span class=hint>many-to-many · Preethi &amp; Neel are in every group automatically · groups drive each guest's "your people" card &amp; look-each-other-up</span><a href="/guests" style="margin-left:auto;font-size:13px">guest decks →</a></header>
+<main>
+ <div class=card>
+  <input id=newg placeholder="new group name… (Enter)">
+  <div class=glist id=gl style="margin-top:10px"></div>
+  <h4>Suggested groups</h4><div id=presets class=hint>detecting…</div>
+ </div>
+ <div class=card id=panel><p class=hint>select a group, or review a suggested one</p></div>
+</main><div id=msg></div>
+<script>
+const $=id=>document.getElementById(id);
+let G=[],P=[],cur=null,draft=null;   // draft = {name, members:[cid]} when reviewing a preset
+function msg(t){const m=$('msg');m.textContent=t;m.style.display='block';clearTimeout(m.t);m.t=setTimeout(()=>m.style.display='none',1800)}
+function pinfo(c){return P.find(x=>x.cid===c)||{cid:c,name:'#'+c,face:'',photos:0}}
+async function api(b){const r=await (await fetch('/api/groups',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)})).json();G=r.groups;paintList();return r}
+async function load(){G=(await (await fetch('/api/groups')).json()).groups;const d=await (await fetch('/api/people')).json();
+ P=d.rows.filter(r=>r.label&&r.label.status==='labeled').map(r=>({cid:r.cid,name:r.label.name,face:r.face,photos:r.photos}));paintList();panel()}
+function paintList(){$('gl').innerHTML=G.map(g=>'<button class="'+(cur===g.id&&!draft?'on':'')+'" data-sel="'+g.id+'">'+g.name+'<small>'+g.members.length+'</small></button>').join('')}
+
+// ---------- main panel: same experience for a saved group and a draft ----------
+function members(){return draft?draft.members:(G.find(x=>x.id===cur)||{members:[]}).members}
+function panel(){const g=draft||G.find(x=>x.id===cur);
+ if(!g){$('panel').innerHTML='<p class=hint>select a group, or review a suggested one</p>';return}
+ const ms=members();
+ $('panel').innerHTML=(draft?'<div class=draftbar>Reviewing a suggested group — nothing is saved until you press <b>Create</b>.</div>':'')
+ +'<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><input id=rn value="'+g.name.replace(/"/g,'&quot;')+'" style="max-width:340px">'
+ +(draft?'<button class="act pri" id=bCreate>Create group ('+ms.length+')</button><button class=act id=bDiscard>Discard</button>'
+        :'<button class=act id=bRename>rename</button><button class="act danger" id=bDelete>delete</button>')
+ +'</div>'
+ +'<div class=mem><div class="chip fixed"><img src="/api/face?cid=15"><b>Neel</b></div><div class="chip fixed"><img src="/api/face?cid=50"><b>Preethi</b></div>'
+ +ms.map(m=>{const p=pinfo(m);return '<div class=chip><img src="'+p.face+'"><b>'+p.name+'</b><span class=x data-rm="'+m+'">×</span></div>'}).join('')+'</div>'
+ +'<input id=add placeholder="add person… type a name"><ul class=sug id=sg></ul>'
+ +'<h4>Suggested next — shares the most photos with current members</h4><ul class=sug id=auto><li class=hint style="cursor:default">…</li></ul>';
+ $('add').oninput=typeahead;
+ if(draft){$('bCreate').onclick=createDraft;$('bDiscard').onclick=()=>{draft=null;panel();paintList()};$('rn').oninput=e=>draft.name=e.target.value}
+ else{$('bRename').onclick=()=>api({op:'rename',id:cur,name:$('rn').value}).then(()=>msg('renamed'));
+      $('bDelete').onclick=()=>{if(confirm('Delete group?'))api({op:'delete',id:cur}).then(()=>{cur=null;msg('deleted');panel()})}}
+ autoSuggest()}
+function typeahead(){const q=$('add').value.trim().toLowerCase();const ul=$('sg');if(!q){ul.innerHTML='';return}
+ const have=new Set(members().concat([15,50]));
+ ul.innerHTML=P.filter(p=>!have.has(p.cid)&&p.name.toLowerCase().includes(q)).slice(0,10)
+  .map(p=>'<li data-addp="'+p.cid+'"><img src="'+p.face+'"><b>'+p.name+'</b><small>'+p.photos+' photos'+otherGroups(p.cid)+'</small></li>').join('')}
+function otherGroups(c){const gs=G.filter(x=>x.members.includes(c)).map(x=>x.name);return gs.length?' · in: '+gs.join(', '):''}
+async function autoSuggest(){const ms=members();const el=$('auto');if(!el)return;
+ if(!ms.length){el.innerHTML='<li class=hint style="cursor:default">add a first person to seed suggestions</li>';return}
+ const r=await (await fetch(draft?'/api/group_suggest?cids='+ms.join(','):'/api/group_suggest?id='+cur)).json();
+ if(!r.suggestions||!r.suggestions.length){el.innerHTML='<li class=hint style="cursor:default">no strong signals left</li>';return}
+ el.innerHTML=r.suggestions.map(p=>'<li data-addp="'+p.cid+'"><img src="'+p.face+'"><b>'+p.name+'</b><small>'+p.score+'% fit · '+p.why.map(w=>w.together+' w/ '+w.name.split(' ')[0]).join(' · ')+'</small></li>').join('')}
+async function addPerson(c){if(draft){if(!draft.members.includes(c))draft.members.push(c);panel()}else{await api({op:'add',id:cur,cids:[c]});msg('added');panel()}}
+async function rmPerson(c){if(draft){draft.members=draft.members.filter(x=>x!==c);panel()}else{await api({op:'remove',id:cur,cids:[c]});msg('removed');panel()}}
+async function createDraft(){const name=(draft.name||'').trim()||'New group';const r=await api({op:'create',name});
+ const g=r.groups[r.groups.length-1];await api({op:'add',id:g.id,cids:draft.members});
+ msg('created '+name+' with '+draft.members.length+' people');draft=null;cur=g.id;panel();paintList();presets()}
+
+// ---------- suggested groups (left column) ----------
+async function presets(){const r=await (await fetch('/api/group_presets')).json();window._presets=r.presets;
+ const el=$('presets');if(!r.presets.length){el.textContent='none left — most people are grouped';return}
+ el.innerHTML=r.presets.map((p,i)=>'<div class=preset><b style="font-size:13px">'+p.name+'</b><span class=hint style="float:right">'+p.size+' people</span>'+(p.tag?'<div class=hint style="margin-top:2px">'+p.tag+'</div>':'')
+  +'<div class=faces>'+p.preview.slice(0,12).map(f=>'<img src="'+f.face+'" title="'+f.name.replace(/"/g,'&quot;')+'">').join('')+(p.size>12?'<span class=hint style="align-self:center">+'+(p.size-12)+'</span>':'')+'</div>'
+  +'<button class="act pri" data-review="'+i+'" style="font-size:12px;padding:5px 12px">Review &amp; create →</button></div>').join('')}
+
+document.addEventListener('click',e=>{
+ const s1=e.target.closest('[data-sel]');if(s1){cur=s1.dataset.sel;draft=null;paintList();panel();return}
+ const s2=e.target.closest('[data-review]');if(s2){const p=window._presets[+s2.dataset.review];draft={name:p.name,members:[...p.members]};cur=null;paintList();panel();return}
+ const s3=e.target.closest('li[data-addp]');if(s3){addPerson(+s3.dataset.addp);const a=$('add');if(a)a.value='';return}
+ const s4=e.target.closest('[data-rm]');if(s4){rmPerson(+s4.dataset.rm);return}});
+$('newg').onkeydown=e=>{if(e.key==='Enter'&&e.target.value.trim()){api({op:'create',name:e.target.value}).then(r=>{cur=r.groups[r.groups.length-1].id;draft=null;e.target.value='';msg('created');paintList();panel()})}};
+load().then(presets);
+</script></body></html>

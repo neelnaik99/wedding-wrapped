@@ -1,0 +1,55 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Highlights — Wedding Wrapped</title>
+<style>
+:root{--bg:#f6f4ef;--panel:#fff;--ink:#1a1a19;--muted:#6b6963;--line:#e4e1d8;--acc:#b8862b;--ok:#1b8f5a;--warn:#c8462f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+header h1{font-size:16px;margin:0;font-weight:600}select,input{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.sum{color:var(--muted);font-size:13px}main{padding:16px 20px;max-width:1700px;margin:0 auto}
+h2{font-size:15px;margin:18px 0 8px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}figure img.ph{width:100%;aspect-ratio:3/2;object-fit:cover;display:block;cursor:zoom-in}
+.meta{padding:6px 10px 2px;font-size:12px;color:var(--muted)}.meta b{color:var(--ink)}
+.ppl{padding:4px 10px 10px}.p{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12px;border-top:1px solid var(--line)}.p:first-child{border-top:0}
+.p img{width:30px;height:30px;border-radius:50%;object-fit:cover}.p .n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.p.me .n{font-weight:700}
+.tag{font-size:11px;padding:1px 7px;border-radius:9px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}.tag.focus{background:#e6f5ec;color:#125c3a;border-color:#bfe3cf}.tag.group{background:#e9eefb;color:#2a4a9a;border-color:#c9d6f5}.tag.background{background:#f1eee6}
+.lk{width:60px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}.lk i{display:block;height:100%;background:linear-gradient(90deg,#c8462f,#eda100 50%,#1b8f5a)}
+.flag{color:var(--warn);font-size:11px}
+.scn{font-size:11px;font-weight:700;min-width:26px;text-align:right}
+#histo div{flex:1;background:#d9d2c2;border-radius:1px 1px 0 0}#histo div.above{background:var(--acc)}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.93);display:none;align-items:center;justify-content:center;z-index:50}#lb.on{display:flex}#lb img{max-width:96vw;max-height:94vh}
+</style></head><body>
+<header><h1>Highlights</h1><select id=who></select><input id=q placeholder="filter people…" style="min-width:140px"><span class=sum id=sum></span>
+<div id=thrbox style="display:flex;align-items:center;gap:10px;flex-basis:100%;padding-top:4px">
+ <span style="font-size:13px;color:var(--muted);white-space:nowrap">their bar</span>
+ <div style="position:relative;flex:1;max-width:420px"><div id=histo style="display:flex;align-items:flex-end;gap:1px;height:26px"></div>
+ <input id=thr type=range min=0 max=100 step=0.5 style="width:100%;margin:0;accent-color:var(--acc)"></div>
+ <b id=thrv style="min-width:44px">–</b><span id=npass class=sum></span>
+ <button id=thrauto style="font:inherit;font-size:12px;padding:4px 9px;border:1px solid var(--line);border-radius:7px;background:#fff;cursor:pointer">auto</button>
+ <span id=thrstate style="font-size:11px;color:var(--muted)"></span></div>
+<a href="/" style="margin-left:auto;color:var(--acc);font-size:13px">← app</a></header>
+<main id=main></main><div id=lb onclick="this.classList.remove('on')"><img id=lbi></div>
+<script>
+const $=id=>document.getElementById(id);let IDX=[];
+const EVN={"GREH SHANTI":"Greh Shanti",HALDI:"Haldi",SANGEET:"Sangeet",WEDDING:"Wedding","RECEPTION PARTY":"Reception","RECEPTION COUPLE":"Reception portraits","BRIDE MORNING":"Bride's morning","GROOM MORNING":"Groom's morning","COUPLE SHOOT":"Couple shoot"};
+const BUCKET={with_couple:"With the couple",focus:"You, in focus",group:"Group photos you're part of"};
+async function init(){IDX=await (await fetch('/api/highlights')).json();if(IDX.error){$('main').innerHTML='<p>'+IDX.error+'</p>';return}
+ IDX.sort((a,b)=>(b.name?1:0)-(a.name?1:0)||b.n_photos-a.n_photos);fill('');const want=+new URLSearchParams(location.search).get('cid');$('who').value=want&&IDX.some(x=>x.cid===want)?want:IDX[0].cid;show()}
+function fill(f){f=f.toLowerCase();$('who').innerHTML=IDX.filter(x=>!f||(x.name||('#'+x.cid)).toLowerCase().includes(f)).map(x=>'<option value="'+x.cid+'">'+(x.name||'#'+x.cid)+' — '+x.n_picks+' of '+x.n_photos+'</option>').join('')}
+let curThr=null,thrTimer=null;
+async function show(extra){const cid=+$('who').value;history.replaceState(null,'','?cid='+cid);
+ const d=await (await fetch('/api/highlights?cid='+cid+(extra!=null?'&thr='+extra:''))).json();curThr=d.thr;
+ $('thr').value=d.thr;$('thrv').textContent=d.thr.toFixed(1);$('npass').textContent=d.n_pass+' of '+d.n_cand+' candidate photos pass';
+ $('thrstate').textContent=d.auto&&extra==null?'auto-fitted':'custom';
+ const mx=Math.max(...d.hist,1);$('histo').innerHTML=d.hist.map((v,i)=>'<div class="'+((i+0.5)*5>=d.thr?'above':'')+'" style="height:'+Math.max(2,26*v/mx)+'px" title="score '+(i*5)+'–'+(i*5+5)+': '+v+' faces"></div>').join('');
+ $('sum').textContent=(d.name||'#'+cid)+' · '+d.n_photos+' photos · focus '+(d.roles.focus||0)+' / group '+(d.roles.group||0)+' / background '+(d.roles.background||0)+' · '+d.picks.length+' highlights';
+ const by={};d.picks.forEach(p=>(by[p.bucket]=by[p.bucket]||[]).push(p));
+ $('main').innerHTML=Object.keys(BUCKET).filter(b=>by[b]).map(b=>'<h2>'+BUCKET[b]+' · '+by[b].length+'</h2><div class=g>'+by[b].map(p=>tile(p,cid)).join('')+'</div>').join('');
+ document.querySelectorAll('img.ph').forEach(i=>i.onclick=()=>{$('lbi').src=i.src;$('lb').classList.add('on')})}
+function tile(p,cid){return '<figure><img class=ph loading=lazy src="'+p.url+'"><div class=meta><b>'+(EVN[p.gallery]||p.gallery)+'</b> · '+p.t.slice(11)+' · '+p.n_faces+' face'+(p.n_faces>1?'s':'')+' · '+p.role+' · score '+p.score.toFixed(0)+'</div><div class=ppl>'+
+ p.people.map(x=>'<div class="p'+(x.cid===cid?' me':'')+'"><img src="'+x.face+'"><span class=n>'+(x.name||'#'+x.cid)+'</span><span class="tag '+x.role+'">'+x.role+(x.role!=='background'?' · '+Math.round(x.prom*100)+'%':'')+'</span><span class=lk title="score '+x.score.toFixed(1)+' vs their bar '+(x.thr==null?'—':x.thr)+'"><i style="width:'+Math.round(x.score)+'%"></i></span><span class=scn style="color:'+(x.thr!=null&&x.score>=x.thr?'var(--ok)':'var(--warn)')+'">'+x.score.toFixed(0)+(x.thr!=null?'/'+Math.round(x.thr):'')+'</span>'+(x.blink?'<span class=flag>blink</span>':'')+(x.edge?'<span class=flag>cut off</span>':'')+'</div>').join('')+'</div></figure>'}
+$('who').onchange=()=>show();$('q').oninput=e=>{fill(e.target.value);show()};
+$('thr').oninput=e=>{$('thrv').textContent=(+e.target.value).toFixed(1);clearTimeout(thrTimer);thrTimer=setTimeout(()=>show(+e.target.value),250)};
+$('thr').onchange=async e=>{const cid=+$('who').value;await fetch('/api/threshold',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cid,value:+e.target.value})});$('thrstate').textContent='custom · saved';};
+$('thrauto').onclick=async()=>{const cid=+$('who').value;await fetch('/api/threshold',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cid,auto:true})});show()};
+init();
+</script></body></html>

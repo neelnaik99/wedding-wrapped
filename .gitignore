@@ -1,0 +1,54 @@
+# --- large binary inputs/outputs (never in git) ---
+photos/
+cache/
+site/
+site_guest/
+.venv/
+__pycache__/
+*.log
+.DS_Store
+
+# --- PII / guest data (never in git) ---
+data/labels.json
+data/labels_history.jsonl
+data/tokens.json
+data/send_manifest.json
+data/households.json
+data/household_guard.json
+data/everyone_hub.json
+data/emails.*
+data/no_email_households.csv
+functions/_lib/login-map.json
+data/backups/
+data/crops/
+
+# --- derived data (rebuildable; some contain face crops) ---
+data/*.parquet
+data/contact/
+data/expr_cache.json
+data/face_expr.json
+data/highlights.json
+data/eda_report.html
+data/relationship_graph.html
+data/relationship_communities.csv
+data/people_stats.csv
+data/event_stats.csv
+data/people_by_event.csv
+
+# --- app build artifacts ---
+app/node_modules/
+app/dist/
+app/.parcel-cache/
+app/bundle.html
+
+# --- experiment outputs (images) ---
+experiments/curation/img/
+experiments/curation/faces/
+experiments/curation/*.html
+experiments/*.log
+data/telemetry.json
+data/.supabase_db_password
+
+# --- local secrets ---
+.dev.vars
+.wrangler/

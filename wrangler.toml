@@ -1,0 +1,12 @@
+# Cloudflare Pages config for the guest site + the Login function (functions/).
+name = "wedding-wrapped"
+pages_build_output_dir = "site_guest"
+compatibility_date = "2026-10-01"
+
+[vars]
+# Sender on the verified preethiandneel.com domain in Resend (DNS records live on Canva DNS).
+MAIL_FROM = "Preethi & Neel <photos@preethiandneel.com>"
+
+[[kv_namespaces]]
+binding = "LOGIN_KV"
+id = "<your-kv-namespace-id>"   # npx wrangler kv namespace create LOGIN_KV

@@ -1,0 +1,486 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* shadcn tokens, mapped onto the wedding NIGHT palette (#30):
+       canvas #221b18 · card #2c231f · ink #f3ece1 · muted #b3a08f */
+    --background: 18 17% 11%; /* night-canvas #221b18 */
+    --foreground: 37 43% 92%; /* night-ink #f3ece1 */
+    --card: 18 17% 15%; /* night-card #2c231f */
+    --card-foreground: 37 43% 92%;
+    --popover: 18 17% 15%;
+    --popover-foreground: 37 43% 92%;
+    --primary: 42 86% 63%;
+    --primary-foreground: 345 65% 18%;
+    --secondary: 20 17% 17%; /* elevated night surface */
+    --secondary-foreground: 37 43% 92%;
+    --muted: 20 17% 17%;
+    --muted-foreground: 28 19% 63%; /* night-muted #b3a08f */
+    --accent: 20 17% 17%;
+    --accent-foreground: 37 43% 92%;
+    --destructive: 350 63% 59%;
+    --destructive-foreground: 37 43% 92%;
+    --border: 0 0% 100% / 0.08;
+    --input: 0 0% 100% / 0.12;
+    --ring: 42 86% 63%;
+    --radius: 0.5rem;
+  }
+
+  /* Light workspace theme (Admin / People / Shared) — toggled by adding .ws to <html> */
+  html.ws {
+    --background: 40 28% 95%;
+    --foreground: 60 2% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 60 2% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 60 2% 10%;
+    --primary: 39 63% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 40 25% 92%;
+    --secondary-foreground: 60 2% 10%;
+    --muted: 40 25% 92%;
+    --muted-foreground: 45 4% 40%;
+    --accent: 40 25% 92%;
+    --accent-foreground: 60 2% 10%;
+    --destructive: 9 63% 48%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 40 18% 87%;
+    --input: 40 18% 84%;
+    --ring: 39 63% 45%;
+    scroll-snap-type: none;
+    background: #f6f4ef;
+  }
+  html.ws body {
+    background: #f6f4ef;
+    color: #1a1a19;
+  }
+  html.ws * {
+    border-color: #e4e1d8;
+  }
+
+  html {
+    scroll-snap-type: y proximity;
+    background: #221b18;
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    margin: 0;
+    background: #221b18;
+    color: #f3ece1;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  * {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* Global focus fallback (#25 / WCAG 2.4.7): a visible ring for any interactive
+     element not covered by a per-component focus-visible utility. Uses the
+     marigold accent — it reads on the admin paper surfaces where most bare
+     controls live. Deck components carry their own focus-visible:ring-haldi
+     (a box-shadow ring); the exclusion below keeps that the sole indicator so
+     the outline and the ring don't double up. This lives in @layer base, so any
+     component that opts out with a `focus-visible:outline-none` utility still wins. */
+  *:focus-visible {
+    outline: 2px solid #b8862b;
+    outline-offset: 2px;
+  }
+  /* Defer to the deck's existing focus-visible:ring-haldi utilities. */
+  .deck :focus-visible,
+  .deck-root :focus-visible {
+    outline: none;
+  }
+}
+
+@layer components {
+  /* Phone: a 430px column. Tablet: 640px. Desktop/TV (>=1024): full width, slide-like cards. */
+  .deck {
+    width: 100%;
+    max-width: 430px;
+    margin: 0 auto;
+    background: #221b18;
+  }
+  @media (min-width: 768px) {
+    .deck {
+      max-width: 640px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .deck {
+      max-width: none;
+    }
+  }
+
+  .card {
+    position: relative;
+    min-height: 100dvh;
+    scroll-snap-align: start;
+    padding: 24px;
+    padding-top: calc(24px + 32px);
+    padding-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  @media (min-width: 1024px) {
+    .card {
+      padding: 88px 48px 56px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .card {
+      padding: 96px 64px 64px;
+    }
+  }
+
+  /* Inner content column: full width on phone, capped at 1280 and centered on wide screens. */
+  .inner {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    min-width: 0;
+  }
+
+  .card--free {
+    min-height: 0;
+    scroll-snap-align: none;
+    justify-content: flex-start;
+  }
+
+  .card--top {
+    justify-content: flex-start;
+  }
+  @media (min-width: 1024px) {
+    /* On a wide screen, "top" cards still centre vertically like a slide;
+       the free (gallery) card keeps flowing from the top. */
+    .card--top:not(.card--free) {
+      justify-content: center;
+    }
+  }
+
+  /* Cards are visible by default; the fade-up only applies when motion is OK
+     (and Card.tsx adds .in on intersection or after a 1500ms fallback). */
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal.reveal--pending {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    .reveal {
+      transition:
+        opacity 0.55s ease,
+        transform 0.55s ease;
+    }
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #b3a08f;
+  }
+  @media (min-width: 1024px) {
+    .eyebrow {
+      font-size: 13px;
+    }
+  }
+
+  .h-serif {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  /* Section title: 30px on phone, 44px at 1024, 52px at 1280+ */
+  .title {
+    font-size: 30px;
+    line-height: 1.15;
+    color: #f3ece1;
+  }
+  @media (min-width: 1024px) {
+    .title {
+      font-size: 44px;
+      line-height: 1.1;
+    }
+  }
+  @media (min-width: 1280px) {
+    .title {
+      font-size: 52px;
+    }
+  }
+
+  /* Body copy: 15px on phone, 18-19px on wide */
+  .body {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  @media (min-width: 1024px) {
+    .body {
+      font-size: 18px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .body {
+      font-size: 19px;
+    }
+  }
+
+  /* Two-column slide layout on wide screens: title left, content right */
+  .split {
+    display: block;
+  }
+  @media (min-width: 1024px) {
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      column-gap: 64px;
+      align-items: start;
+    }
+    .split--center {
+      align-items: center;
+    }
+    .split > .split-head {
+      position: sticky;
+      top: 96px;
+    }
+    .split--center > .split-head {
+      position: static;
+    }
+  }
+
+  /* Two pill styles only: action (filled gold on dark, interactive) and meta (glass, read-only). */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 11px;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .pill--action {
+    background: #e0a63a;
+    color: #221b18;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 5px 11px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+  .hit:hover .pill--action,
+  .pill--action:hover {
+    background: #f2c14e;
+  }
+  .pill--meta {
+    background: rgba(34, 27, 24, 0.55);
+    color: rgba(243, 236, 225, 0.9);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+  /* 44×44 minimum hit area around a small visual pill */
+  .hit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 6px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .draft-pill {
+    position: fixed;
+    right: 12px;
+    z-index: 40;
+    background: #b83a4e;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 5px 11px;
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+  }
+
+  .divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* --- unified app shell --- */
+  :root {
+    --nav-h: 48px;
+  }
+  .deck-root--embedded .card {
+    padding-top: calc(24px + 32px + var(--nav-h));
+  }
+  @media (min-width: 1024px) {
+    .deck-root--embedded .card {
+      padding-top: calc(88px + var(--nav-h));
+    }
+  }
+  .deck-root--embedded .card.\!p-0 {
+    padding-top: 0 !important;
+  }
+
+  .ws-page {
+    padding: calc(var(--nav-h) + 20px) 24px 48px;
+    max-width: 1440px;
+    margin: 0 auto;
+    color: #1a1a19;
+    font-size: 14px;
+  }
+  .ws-panel {
+    background: #fff;
+    border: 1px solid #e4e1d8;
+    border-radius: 10px;
+  }
+  .ws-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #e4e1d8;
+    background: #fff;
+    color: #1a1a19;
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 13px;
+    line-height: 1.3;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .ws-btn:hover {
+    border-color: #b8862b;
+  }
+  .ws-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+  .ws-btn--primary {
+    background: #b8862b;
+    border-color: #b8862b;
+    color: #fff;
+  }
+  .ws-btn--primary:hover {
+    background: #a3761f;
+  }
+  .ws-btn--sm {
+    padding: 2px 8px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+  .ws-input {
+    border: 1px solid #e4e1d8;
+    background: #fff;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    color: #1a1a19;
+    outline: none;
+  }
+  .ws-input:focus {
+    border-color: #b8862b;
+    box-shadow: 0 0 0 3px rgba(184, 134, 43, 0.15);
+  }
+  .ws-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 11px;
+    line-height: 1.4;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .ws-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+  }
+  .ws-table th {
+    position: sticky;
+    top: var(--nav-h);
+    z-index: 5;
+    background: #faf9f6;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6b6963;
+    padding: 8px 10px;
+    border-bottom: 1px solid #e4e1d8;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .ws-table th.sortable {
+    cursor: pointer;
+  }
+  .ws-table th.sortable:hover {
+    color: #1a1a19;
+  }
+  .ws-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #efece5;
+    vertical-align: middle;
+  }
+  .ws-table tr:hover td {
+    background: #fbfaf7;
+  }
+  .ws-table tr.is-selected td {
+    background: #fdf6e6;
+  }
+  .face-box {
+    position: absolute;
+    border: 2px solid #f2c14e;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    pointer-events: none;
+  }
+  .face-tag {
+    position: absolute;
+    transform: translateY(-100%);
+    background: rgba(34, 27, 24, 0.85);
+    color: #f3ece1;
+    font-size: 11px;
+    line-height: 1.2;
+    padding: 2px 6px;
+    border-radius: 4px 4px 0 0;
+    white-space: nowrap;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+}

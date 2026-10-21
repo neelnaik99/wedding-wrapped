@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wedding Wrapped</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: ivory editorial column beside a phone running the live demo; a strip of the weekend's event colors as the signature. */
+:root {
+  --canvas: #faf7f2;
+  --surface: #f1ece3;
+  --ink: #1c1917;
+  --muted: #6b5f52;
+  --hairline: #e7e0d4;
+  --accent: #8f6512;
+  --phone: #221b18;
+  --serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --sans: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --canvas: #221b18; --surface: #2c231f; --ink: #f3ece1; --muted: #b3a08f;
+    --hairline: #3a2f28; --accent: #e8b45a; --phone: #141210; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --canvas: #221b18; --surface: #2c231f; --ink: #f3ece1; --muted: #b3a08f;
+  --hairline: #3a2f28; --accent: #e8b45a; --phone: #141210; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--canvas); color: var(--ink); font: 400 1rem/1.6 var(--sans);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: var(--ink); text-decoration-color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 48px 64px; display: grid; gap: 56px; }
+.eyebrow { font: 500 .75rem/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+h1, h2 { font-family: var(--serif); font-weight: 400; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.6rem, 6vw, 4.4rem); line-height: 1.02; letter-spacing: -.01em; }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.15; }
+p { margin: 0; max-width: 62ch; }
+.lede { font-size: 1.15rem; color: var(--muted); }
+
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 48px; align-items: center; }
+.hero-text { display: grid; gap: 20px; min-width: 0; }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 999px;
+  border: 1px solid var(--ink); font: 500 .95rem/1 var(--sans); text-decoration: none; color: var(--ink);
+}
+.btn.primary { background: var(--ink); color: var(--canvas); }
+.note { font-size: .85rem; color: var(--muted); }
+
+.phone {
+  width: 300px; max-width: 100%; aspect-ratio: 9 / 19; background: var(--phone);
+  border-radius: 40px; padding: 10px; box-shadow: 0 30px 60px -30px rgb(0 0 0 / .45);
+}
+.phone iframe { width: 100%; height: 100%; border: 0; border-radius: 31px; background: #221b18; display: block; }
+.phone-cap { text-align: center; margin-top: 12px; }
+
+.events { display: grid; grid-template-columns: repeat(9, 1fr); height: 14px; border-radius: 3px; overflow: hidden; }
+.events span:nth-child(1) { background: #efe3cd; } .events span:nth-child(2) { background: #c8283c; }
+.events span:nth-child(3) { background: #e8b45a; } .events span:nth-child(4) { background: #f0dfc2; }
+.events span:nth-child(5) { background: #26365c; } .events span:nth-child(6) { background: #7d915c; }
+.events span:nth-child(7) { background: #f0dfc2; } .events span:nth-child(8) { background: #9c8568; }
+.events span:nth-child(9) { background: #241631; }
+.events-cap { display: flex; justify-content: space-between; margin-top: 8px; }
+
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); }
+.stat { padding: 22px 16px 22px 0; display: grid; gap: 4px; }
+.stat + .stat { padding-left: 16px; border-left: 1px solid var(--hairline); }
+.stat b { font: 400 2.2rem/1 var(--serif); font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: .9rem; }
+
+.section { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; }
+.section > header { display: grid; gap: 8px; align-content: start; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: s; }
+.steps li { display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: 12px; padding: 16px 0; border-top: 1px solid var(--hairline); counter-increment: s; }
+.steps li::before { content: counter(s, decimal-leading-zero); font: 500 .8rem/1.9 var(--mono); color: var(--accent); }
+.steps b { font-weight: 600; }
+.rules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.rule { background: var(--surface); border-radius: 14px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.rule h3 { margin: 0; font: 600 1rem/1.3 var(--sans); }
+.rule p { color: var(--muted); font-size: .95rem; }
+.stack { font: 400 .85rem/1.9 var(--mono); color: var(--muted); }
+footer { border-top: 1px solid var(--hairline); padding-top: 20px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+
+@media (max-width: 820px) {
+  .hero { grid-template-columns: 1fr; justify-items: start; }
+  .phone-col { justify-self: center; }
+  .section { grid-template-columns: 1fr; gap: 16px; }
+  .rules { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat:nth-child(3) { border-left: 0; padding-left: 0; border-top: 1px solid var(--hairline); }
+  .stat:nth-child(4) { border-top: 1px solid var(--hairline); }
+}
+</style>
+</head>
+<body>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="hero-text">
+      <div class="eyebrow">Preethi &amp; Neel · Atlanta · April 24–25, 2026</div>
+      <h1>Wedding Wrapped</h1>
+      <p class="lede">Every guest gets their own recap of the wedding weekend. Face recognition finds each guest in thousands of professional photos, picks their best shots, and builds a private page for their household.</p>
+      <div class="links">
+        <a class="btn primary" href="h/demo/" target="_blank" rel="noopener">Open the demo full screen</a>
+        <a class="btn" href="https://github.com/neelnaik99/wedding-wrapped" target="_blank" rel="noopener">Code on GitHub</a>
+        <a class="btn" href="https://photos.preethiandneel.com" target="_blank" rel="noopener">Live site</a>
+      </div>
+      <p class="note">The demo is one household's real page layout with made-up names and drawn stand-ins for the photos. The live site asks for a guest's email, so it only works for people who were at the wedding.</p>
+    </div>
+    <div class="phone-col">
+      <div class="phone"><iframe src="h/demo/" title="Demo of a household's Wedding Wrapped page" loading="lazy"></iframe></div>
+      <p class="phone-cap note">Scroll inside the phone. Tap a name to switch whose photos you see.</p>
+    </div>
+  </section>
+
+  <div>
+    <div class="events" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="events-cap eyebrow"><span>Groom morning</span><span>9 events</span><span>Reception</span></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b>4,206</b><span>photos across 9 events</span></div>
+    <div class="stat"><b>26,350</b><span>faces detected</span></div>
+    <div class="stat"><b>140</b><span>guests identified</span></div>
+    <div class="stat"><b>$0</b><span>monthly hosting</span></div>
+  </div>
+
+  <section class="section">
+    <header><div class="eyebrow">How it works</div><h2>From one gallery to 72 households</h2></header>
+    <ol class="steps">
+      <li><span><b>Find every face.</b> A face model reads each photo and turns every face into a numeric fingerprint.</span></li>
+      <li><span><b>Group faces into people.</b> Similar fingerprints are clustered, and an admin tool lets a person name each cluster and fix mistakes.</span></li>
+      <li><span><b>Score every shot.</b> Eyes open, smiling, sharp, and in focus or in the background. Each guest gets their own quality bar, because lighting differs by event.</span></li>
+      <li><span><b>Pick the highlights.</b> About 25 per guest, one per scene, split between photos with the couple, solo shots and group shots.</span></li>
+      <li><span><b>Build one page per household.</b> A member picker drives every section, and friend groups found from who appears together become an interactive map.</span></li>
+      <li><span><b>Check, then ship.</b> Privacy rules are re-checked on every deploy. Guests type their email on the site and get their household's link.</span></li>
+    </ol>
+  </section>
+
+  <section class="section">
+    <header><div class="eyebrow">Privacy rules</div><h2>What each guest can see</h2></header>
+    <div class="rules">
+      <div class="rule"><h3>Only your household</h3><p>A page holds only photos that include someone in the household, or just the couple. Other photos are never shipped, so there is nothing to unhide.</p></div>
+      <div class="rule"><h3>Never your worst shots</h3><p>You only see photos where you clear your own quality bar. Photos where someone else looks bad are pushed down and capped.</p></div>
+      <div class="rule"><h3>Fails closed</h3><p>A deploy stops if any photo breaks the household rule, or if any public file contains an email, a guest ID or another guest's link.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <header><div class="eyebrow">Built with</div><h2>Stack</h2></header>
+    <p class="stack">Python · InsightFace · scikit-learn · pandas / Parquet · NetworkX (Louvain) · React · TypeScript · Vite · Radix UI · Cloudflare Pages, Functions and KV · Resend · Supabase</p>
+  </section>
+
+  <footer class="note">
+    <span>Designed and built by Neel Naik.</span>
+    <span><a href="https://github.com/neelnaik99/wedding-wrapped" target="_blank" rel="noopener">github.com/neelnaik99/wedding-wrapped</a></span>
+  </footer>
+</main>
+</body>
+</html>

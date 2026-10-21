@@ -1,0 +1,4 @@
+{
+ "_README": "Per-guest experience-tier override (issue #32). Keys are cluster ids (as strings); values are one of: inner | group | cameo | glimpse | light. 'light' is only ever set by hand (never computed from photo count): a light guest alone in their Household gets a light-mode Deck (Cover + couple picks + own gallery); in a multi-member Household they are an ordinary selectable member. Curation treats light like cameo. An override WINS over the photo-count computed tier (150+ inner, 50-149 group, 15-49 cameo, <15 glimpse), protecting close family near a boundary from being demoted by a photo count. Keys beginning with '_' are ignored. This file is git-tracked (like data/thresholds.json) and consumed by build_wrapped.build via build_guests.py.",
+ "_example": "cameo"
+}
