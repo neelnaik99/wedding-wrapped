@@ -89,6 +89,11 @@ p { margin: 0; max-width: 62ch; }
 .rule { background: var(--surface); border-radius: 14px; padding: 20px; display: grid; gap: 8px; align-content: start; }
 .rule h3 { margin: 0; font: 600 1rem/1.3 var(--sans); }
 .rule p { color: var(--muted); font-size: .95rem; }
+.problem { display: grid; gap: 18px; min-width: 0; }
+.pains { list-style: none; margin: 0; padding: 0; display: grid; }
+.pains li { padding: 14px 0; border-top: 1px solid var(--hairline); max-width: 62ch; }
+.pains li:last-child { border-bottom: 1px solid var(--hairline); }
+.pains b { font-weight: 600; }
 .stack { font: 400 .85rem/1.9 var(--mono); color: var(--muted); }
 footer { border-top: 1px solid var(--hairline); padding-top: 20px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
 
@@ -121,6 +126,19 @@ footer { border-top: 1px solid var(--hairline); padding-top: 20px; display: flex
     <div class="phone-col">
       <div class="phone"><iframe src="h/demo/" title="Demo of a household's Wedding Wrapped page" loading="lazy"></iframe></div>
       <p class="phone-cap note">Scroll inside the phone. Tap a name to switch whose photos you see.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <header><div class="eyebrow">The problem</div><h2>Guests never see most of their photos</h2></header>
+    <div class="problem">
+      <p>A photographer delivers one huge gallery: here, 4,206 photos across 9 events. Guests won't scroll through thousands of photos to find the few they're in, so most never see their best moments from the weekend.</p>
+      <ul class="pains">
+        <li><b>Couples can't do it by hand.</b> Sorting 4,000 photos for 140 guests isn't realistic.</li>
+        <li><b>Photos of people are sensitive.</b> Nobody wants their worst shots sent around, and families shouldn't get photos of other families.</li>
+        <li><b>Many guests aren't comfortable with tech.</b> Older relatives give up at a login, an app download or a password.</li>
+      </ul>
+      <p>Wedding Wrapped turns the one big gallery into a short, private recap for each household, with no effort from guests and no hand-sorting by the couple.</p>
     </div>
   </section>
 

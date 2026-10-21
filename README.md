@@ -2,6 +2,8 @@
 
 **Every guest gets a personal photo recap.** Built for Preethi & Neel's wedding weekend (Atlanta, April 24–25, 2026): face recognition finds each guest in ~4,200 professional photos, picks their best shots, and builds a private page for every household.
 
+**The problem:** a photographer delivers one huge gallery (here, 4,206 photos across 9 events). Guests won't scroll through thousands of photos to find the few they're in, couples can't hand-sort them for 140 people, and sending everyone everything ignores whose photos are whose. Wedding Wrapped turns that one gallery into a short, private recap for each household.
+
 - **Try the demo:** https://neelnaik99.github.io/wedding-wrapped/demo/ (one real household's page layout with made-up names and drawn stand-ins for the photos)
 - **Live site:** https://photos.preethiandneel.com (asks for a guest's email, so it only works for people who were at the wedding)
 
